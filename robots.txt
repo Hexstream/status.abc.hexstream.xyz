@@ -1,0 +1,4 @@
+Sitemap: https://status.abc.hexstream.xyz/sitemap.xml
+
+User-agent: *
+Disallow: /special/

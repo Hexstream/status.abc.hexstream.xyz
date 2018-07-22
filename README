@@ -1,0 +1,9 @@
+Website's primary location: https://status.abc.hexstream.xyz/
+Website source code's primary location: https://github.com/Hexstream/status.abc.hexstream.xyz
+
+
+Just a simple aggregate status page. Retrieves info from the updown.io API.
+
+
+This website is in the Public Domain.
+See the UNLICENSE file for details.
