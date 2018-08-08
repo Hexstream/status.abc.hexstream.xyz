@@ -23,10 +23,21 @@ progress {
     margin-top: 1em;
 }
 
+#summary .tab-groups .tabs {
+    justify-content: center;
+}
+
+#summary .tab-groups .tabs > h1 {
+    margin-left: 0;
+    margin-right: 0;
+}
+
 #summary .tab-groups .tabs > ul {
     justify-content: center;
     background: transparent;
     border: none;
+    margin-left: 0;
+    margin-right: 0;
 }
 
 #summary .tab-groups .tabs > ul > li {
