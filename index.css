@@ -18,6 +18,7 @@ progress {
 
 
 #summary .tab-groups {
+    justify-content: center;
     font-size: larger;
     font-weight: bold;
     margin-top: 1em;
@@ -25,6 +26,8 @@ progress {
 
 #summary .tab-groups .tabs {
     justify-content: center;
+    margin-left: 0.5em;
+    margin-right: 0.5em;
 }
 
 #summary .tab-groups .tabs > h1 {
