@@ -5,3 +5,7 @@
 #summary .tags .tag {
     opacity: 1;
 }
+
+.notice + .tabs {
+    margin-top: 1.5em;
+}
