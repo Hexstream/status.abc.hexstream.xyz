@@ -1,3 +1,13 @@
+.notice + .tabs {
+    margin-top: 1.5em;
+}
+
+
+progress {
+    width: 1.5em;
+}
+
+
 #summary .tags {
     font-size: x-large;
 }
@@ -6,6 +16,41 @@
     opacity: 1;
 }
 
-.notice + .tabs {
-    margin-top: 1.5em;
+
+#summary .tab-groups {
+    font-size: larger;
+    font-weight: bold;
+    margin-top: 1em;
+}
+
+#summary .tab-groups .tabs > ul {
+    justify-content: center;
+    background: transparent;
+    border: none;
+}
+
+#summary .tab-groups .tabs > ul > li {
+    flex: none;
+    width: 4.75rem;
+    border: medium solid black;
+    margin: 0.15em;
+    white-space: nowrap;
+}
+
+#summary .tab-groups .tabs > ul > li > a {
+    padding: 0.2rem 0.4rem;
+    color: black;
+}
+
+#summary .tab-groups .tabs > ul > li:hover {
+    border-color: blue;
+}
+
+
+#summary .tab-groups .tabs > ul > li > a.up {
+    background-color: rgba(0, 255, 0, 0.5);;
+}
+
+#summary .tab-groups .tabs > ul > li > a.down {
+    background-color: red;
 }
