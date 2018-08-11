@@ -68,3 +68,12 @@ progress {
 #summary .tab-groups .tabs > ul > li > a.down {
     background-color: red;
 }
+
+
+/* Magically align hexstream.xyz with hexstreamsoft.com. */
+@media (min-width: 74.75em) {
+    #summary #summary_hexstream\.xyz {
+        position: relative;
+        left: -0.3em;
+    }
+}
