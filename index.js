@@ -1,10 +1,36 @@
 "use strict";
 
+var now = new Date();
 const stats = fetch("https://updown.io/api/checks?api-key=ro-m39tkgb1wAtmudZEvB4i").then(response => response.json());
 var summaryTabs;
 
+
 function formatUptime (uptime) {
     return uptime < 100 ? uptime.toFixed(2) : uptime;
+}
+
+function formatDate (dateString, delta) {
+    function formatDeltaSeconds (deltaSeconds) {
+        function format (delta) {
+            return (delta < 10 ? "0" : "") + delta.toFixed(0);
+        }
+        deltaSeconds = Math.round(deltaSeconds);
+        return format(deltaSeconds / 60) + ":" + format(deltaSeconds % 60);
+    }
+    function formatPastDate (date, deltaSeconds) {
+        return formatDeltaSeconds(deltaSeconds) + " ago at " + date.toLocaleTimeString();
+    }
+    function formatFutureDate (date, deltaSeconds) {
+        return "in " + formatDeltaSeconds(deltaSeconds) + " at " + date.toLocaleTimeString();
+    }
+    const date = new Date(dateString);
+    var deltaSeconds = (date - now) / 1000;
+    if (deltaSeconds < 0) {
+        return formatPastDate(date, Math.abs(deltaSeconds));
+    }
+    else {
+        return formatFutureDate(date, deltaSeconds);
+    }
 }
 
 function syncSummaryStatus (status) {
@@ -21,6 +47,10 @@ function syncMainStatus (status) {
     currentStatusCell.textContent = status.down ? "✘ DOWN!" : "✔ Up!";
     const uptimeCell = row.querySelector(".uptime");
     uptimeCell.textContent = formatUptime(status.uptime) + "%";
+    const lastCheckCell = row.querySelector(".last-check");
+    lastCheckCell.textContent = formatDate(status.last_check_at);
+    const nextCheckCell = row.querySelector(".next-check");
+    nextCheckCell.textContent = formatDate(status.next_check_at);
 }
 
 document.addEventListener("DOMContentLoaded", function () {
