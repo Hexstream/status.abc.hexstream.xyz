@@ -33,6 +33,12 @@ function formatDate (dateString, delta) {
     }
 }
 
+const months = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"];
+
+function formatFriendlyDate (date) {
+    return date.getDate() + " " + months[date.getMonth()] + " " + date.getFullYear();
+}
+
 function syncSummaryStatus (status) {
     const element = summaryTabs.querySelector(`[href="#${status.alias}"]`);
     element.classList.add(status.down ? "down" : "up");
@@ -55,8 +61,12 @@ function syncMainStatus (status) {
 
 document.addEventListener("DOMContentLoaded", function () {
     stats.then(function (data) {
-        console.log(now.toISOString());
+        const nowUTC = now.toISOString();
+        console.log(nowUTC);
         console.log(data);
+        const nowElement = document.querySelector("#now time");
+        nowElement.setAttribute("datetime", nowUTC);
+        nowElement.textContent = now.toLocaleTimeString() + " on " + formatFriendlyDate(now);
         document.querySelector("#total-up-count").textContent = data.filter(status => !status.down).length;
         const totalAverageUptime = data.reduce((total, status) => total + status.uptime, 0) / data.length;
         document.querySelector("#total-average-uptime").textContent = formatUptime(totalAverageUptime) + "%";
