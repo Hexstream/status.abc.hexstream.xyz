@@ -15,7 +15,7 @@ function formatDate (dateString, delta) {
             return (delta < 10 ? "0" : "") + delta.toFixed(0);
         }
         deltaSeconds = Math.round(deltaSeconds);
-        return format(deltaSeconds / 60) + ":" + format(deltaSeconds % 60);
+        return format(Math.floor(deltaSeconds / 60)) + ":" + format(deltaSeconds % 60);
     }
     function formatPastDate (date, deltaSeconds) {
         return formatDeltaSeconds(deltaSeconds) + " ago at " + date.toLocaleTimeString();
