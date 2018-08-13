@@ -55,6 +55,8 @@ function syncMainStatus (status) {
 
 document.addEventListener("DOMContentLoaded", function () {
     stats.then(function (data) {
+        console.log(now.toISOString());
+        console.log(data);
         document.querySelector("#total-up-count").textContent = data.filter(status => !status.down).length;
         const totalAverageUptime = data.reduce((total, status) => total + status.uptime, 0) / data.length;
         document.querySelector("#total-average-uptime").textContent = formatUptime(totalAverageUptime) + "%";
