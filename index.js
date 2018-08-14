@@ -1,18 +1,11 @@
 "use strict";
 
-var now = new Date();
-const stats = fetch("https://updown.io/api/checks?api-key=ro-m39tkgb1wAtmudZEvB4i").then(response => response.json());
+var now;
+const stats = fetch("https://updown.io/api/checks?api-key=ro-m39tkgb1wAtmudZEvB4i", {cache: "no-cache"}).then(function (response) {
+    now = new Date(response.headers.get("date"));
+    return response.json();
+});
 var summaryTabs;
-
-function clamp (value, bound1, bound2) {
-    const [lowerBound, upperBound] =
-          bound1 < bound2 ? [bound1, bound2] : [bound2, bound1];
-    if (value < lowerBound)
-        return lowerBound;
-    if (value > upperBound)
-        return upperBound;
-    return value;
-}
 
 function formatUptime (uptime) {
     return uptime < 100 ? uptime.toFixed(2) : uptime;
@@ -70,9 +63,6 @@ function syncMainStatus (status) {
 
 document.addEventListener("DOMContentLoaded", function () {
     stats.then(function (data) {
-        const lastCheck = data.slice().sort((a, b) => new Date(b.last_check_at) - new Date(a.last_check_at))[0];
-        const nextCheck = data.slice().sort((a, b) => new Date(a.next_check_at) - new Date(b.next_check_at))[0];
-        now = clamp(now, new Date(lastCheck.last_check_at), new Date(nextCheck.next_check_at));
         const nowUTC = now.toISOString();
         console.log(nowUTC);
         console.log(data);
@@ -82,7 +72,9 @@ document.addEventListener("DOMContentLoaded", function () {
         document.querySelector("#total-up-count").textContent = data.filter(status => !status.down).length;
         const totalAverageUptime = data.reduce((total, status) => total + status.uptime, 0) / data.length;
         document.querySelector("#total-average-uptime").textContent = formatUptime(totalAverageUptime) + "%";
+        const lastCheck = data.slice().sort((a, b) => new Date(b.last_check_at) - new Date(a.last_check_at))[0];
         document.querySelector("#last-check").textContent = `${lastCheck.alias} was ${lastCheck.down ? "DOWN" : "up"} ${formatDate(lastCheck.last_check_at)}.`;
+        const nextCheck = data.slice().sort((a, b) => new Date(a.next_check_at) - new Date(b.next_check_at))[0];
         document.querySelector("#next-check").textContent = `${nextCheck.alias} will be checked ${formatDate(nextCheck.next_check_at)}.`;
         summaryTabs = document.querySelector("#summary .tab-groups");
         data.forEach(function (status) {
