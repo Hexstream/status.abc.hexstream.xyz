@@ -70,6 +70,10 @@ document.addEventListener("DOMContentLoaded", function () {
         document.querySelector("#total-up-count").textContent = data.filter(status => !status.down).length;
         const totalAverageUptime = data.reduce((total, status) => total + status.uptime, 0) / data.length;
         document.querySelector("#total-average-uptime").textContent = formatUptime(totalAverageUptime) + "%";
+        const lastCheck = data.slice().sort((a, b) => new Date(b.last_check_at) - new Date(a.last_check_at))[0];
+        document.querySelector("#last-check").textContent = `${lastCheck.alias} was ${lastCheck.down ? "DOWN" : "up"} ${formatDate(lastCheck.last_check_at)}.`;
+        const nextCheck = data.slice().sort((a, b) => new Date(a.next_check_at) - new Date(b.next_check_at))[0];
+        document.querySelector("#next-check").textContent = `${nextCheck.alias} will be checked ${formatDate(nextCheck.next_check_at)}.`;
         summaryTabs = document.querySelector("#summary .tab-groups");
         data.forEach(function (status) {
             syncSummaryStatus(status);

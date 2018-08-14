@@ -8,8 +8,9 @@ progress {
 }
 
 
-#summary .tags {
+#summary #uptime.tags {
     font-size: x-large;
+    margin-bottom: 0.5em;
 }
 
 #summary .tags .tag {
