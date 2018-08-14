@@ -76,7 +76,7 @@ document.addEventListener("DOMContentLoaded", function () {
         document.querySelector("#last-check").textContent = `${lastCheck.alias} was ${lastCheck.down ? "DOWN" : "up"} ${formatDate(lastCheck.last_check_at)}.`;
         const nextCheck = data.slice().sort((a, b) => new Date(a.next_check_at) - new Date(b.next_check_at))[0];
         const nextCheckIsPending = new Date(nextCheck.next_check_at) < now;
-        document.querySelector("#next-check").textContent = `${nextCheck.alias} ${nextCheckIsPending ? "is being checked since" : "will be checked"} ${formatDate(nextCheck.next_check_at)}.`;
+        document.querySelector("#next-check").textContent = `${nextCheck.alias} ${nextCheckIsPending ? "has a check pending since" : "will be checked"} ${formatDate(nextCheck.next_check_at)}.`;
         summaryTabs = document.querySelector("#summary .tab-groups");
         data.forEach(function (status) {
             syncSummaryStatus(status);
