@@ -11,7 +11,7 @@ function formatUptime (uptime) {
     return uptime < 100 ? uptime.toFixed(2) : uptime;
 }
 
-function formatDate (dateString, delta) {
+function formatDate (dateString) {
     function formatDeltaSeconds (deltaSeconds) {
         function format (delta) {
             return (delta < 10 ? "0" : "") + delta.toFixed(0);
