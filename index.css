@@ -78,3 +78,15 @@ progress {
         left: -0.3em;
     }
 }
+
+
+#details caption {
+    margin-bottom: 0.25em;
+}
+
+#details #recent-and-upcoming-checks > .compact {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-around;
+    justify-content: space-evenly;
+}

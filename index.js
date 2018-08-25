@@ -71,6 +71,30 @@ function syncMainStatus (status) {
     nextCheckCell.textContent = status.nextCheck.formatDate();
 }
 
+function syncDetailedStatus (recentChecks, pendingChecks, upcomingChecks) {
+    function process (checks, id, additionalProcessing) {
+        const template = document.querySelector(`#${id} > tbody > template`);
+        const recentBody = template.parentElement;
+        checks.forEach(function (check) {
+            const row = template.content.cloneNode(true);
+            const websiteCell = row.querySelector(".website a");
+            websiteCell.href = "#" + check.alias;
+            websiteCell.textContent = check.alias;
+            additionalProcessing(check, row);
+            recentBody.appendChild(row);
+        });
+    }
+    process(recentChecks, "recent-checks", function (check, row) {
+        row.querySelector(".status").textContent = check.down ? "✘ DOWN!" : "✔ Up!";
+        row.querySelector(".when").textContent = check.lastCheck.formatDate();
+    });
+    function formatNextCheck (check, row) {
+        row.querySelector(".when").textContent = check.nextCheck.formatDate();
+    }
+    process(pendingChecks, "pending-checks", formatNextCheck);
+    process(upcomingChecks, "upcoming-checks", formatNextCheck);
+}
+
 function transformObject (object, transformers) {
     const transformed = {};
     Object.keys(object).forEach(function (key) {
@@ -106,25 +130,38 @@ function normalizeRawChecks (rawChecks) {
     return transformed;
 }
 
+function computeRecentPendingUpcoming (checks) {
+    const recent = checks.slice().sort((a, b) => b.lastCheck.when - a.lastCheck.when);
+    const pendingOrUpcoming = checks.slice().sort((a, b) => a.nextCheck.when - b.nextCheck.when);
+    return [
+        recent,
+        pendingOrUpcoming.filter(check => check.nextCheck.isPending),
+        pendingOrUpcoming.filter(check => !check.nextCheck.isPending),
+        pendingOrUpcoming[0]
+    ];
+}
+
 document.addEventListener("DOMContentLoaded", function () {
-    stats.then(normalizeRawChecks).then(function (data) {
+    stats.then(normalizeRawChecks).then(function (checks) {
         const nowUTC = now.toISOString();
         console.log(nowUTC);
-        console.log(data);
+        console.log(checks);
         const nowElement = document.querySelector("#now time");
         nowElement.setAttribute("datetime", nowUTC);
         nowElement.textContent = now.toLocaleTimeString() + " on " + formatFriendlyDate(now);
-        document.querySelector("#total-up-count").textContent = data.filter(status => !status.down).length;
-        const totalAverageUptime = data.reduce((total, status) => total + status.uptime, 0) / data.length;
+        document.querySelector("#total-up-count").textContent = checks.filter(status => !status.down).length;
+        const totalAverageUptime = checks.reduce((total, status) => total + status.uptime, 0) / checks.length;
         document.querySelector("#total-average-uptime").textContent = formatUptime(totalAverageUptime) + "%";
-        const mostRecentCheck = data.slice().sort((a, b) => b.lastCheck.when - a.lastCheck.when)[0];
+        const [recentChecks, pendingChecks, upcomingChecks, oldestPendingOrUpcoming] = computeRecentPendingUpcoming(checks);
+        const mostRecentCheck = recentChecks[0];
         document.querySelector("#last-check").textContent = `${mostRecentCheck.alias} was ${mostRecentCheck.down ? "DOWN" : "up"} ${mostRecentCheck.lastCheck.formatDate()}.`;
-        const mostUpcomingCheck = data.slice().sort((a, b) => a.nextCheck.when - b.nextCheck.when)[0];
+        const mostUpcomingCheck = oldestPendingOrUpcoming;
         document.querySelector("#next-check").textContent = `${mostUpcomingCheck.alias} ${mostUpcomingCheck.nextCheck.isPending ? "has a check pending since" : "will be checked"} ${mostUpcomingCheck.nextCheck.formatDate()}.`;
         summaryTabs = document.querySelector("#summary .tab-groups");
-        data.forEach(function (status) {
+        checks.forEach(function (status) {
             syncSummaryStatus(status);
             syncMainStatus(status);
         });
+        syncDetailedStatus(recentChecks, pendingChecks, upcomingChecks);
     });
 });
