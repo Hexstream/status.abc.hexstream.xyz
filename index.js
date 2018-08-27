@@ -35,7 +35,7 @@ class CheckTime {
 
 };
 
-const stats = fetch("https://updown.io/api/checks?api-key=ro-m39tkgb1wAtmudZEvB4i", {cache: "no-cache"}).then(function (response) {
+const stats = fetch("https://updown.io/api/checks?api-key=ro-m39tkgb1wAtmudZEvB4i").then(function (response) {
     now = new Date(response.headers.get("date"));
     return response.json();
 });
