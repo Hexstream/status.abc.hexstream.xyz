@@ -1,6 +1,7 @@
 "use strict";
 
 var now;
+var smallestPeriod;
 var rawSymbol = Symbol("raw");
 
 class CheckTime {
@@ -41,6 +42,7 @@ const stats = fetch("https://updown.io/api/checks?api-key=ro-m39tkgb1wAtmudZEvB4
 });
 var summaryTabs;
 
+
 function formatUptime (uptime) {
     return uptime < 100 ? uptime.toFixed(2) : uptime;
 }
@@ -52,9 +54,12 @@ function formatFriendlyDate (date) {
 }
 
 function syncSummaryStatus (status) {
-    const element = summaryTabs.querySelector(`[href="#${status.alias}"]`);
-    element.classList.add(status.down ? "down" : "up");
-    element.textContent = formatUptime(status.uptime) + "%";
+    const link = summaryTabs.querySelector(`[href="#${status.alias}"]`);
+    const tab = link.parentElement;
+    tab.classList.add(status.down ? "down" : "up");
+    link.textContent = formatUptime(status.uptime) + "%";
+    if (status.period > smallestPeriod)
+        tab.classList.add("secondary");
 }
 
 function syncMainStatus (status) {
@@ -69,6 +74,8 @@ function syncMainStatus (status) {
     lastCheckCell.textContent = status.lastCheck.formatDate();
     const nextCheckCell = row.querySelector(".next-check");
     nextCheckCell.textContent = status.nextCheck.formatDate();
+    if (status.period > smallestPeriod)
+        row.classList.add("secondary");
 }
 
 function syncDetailedStatus (recentChecks, pendingChecks, upcomingChecks) {
@@ -81,6 +88,8 @@ function syncDetailedStatus (recentChecks, pendingChecks, upcomingChecks) {
             websiteCell.href = "#" + check.alias;
             websiteCell.textContent = check.alias;
             additionalProcessing(check, row);
+            if (check.period > smallestPeriod)
+                row.firstElementChild.classList.add("secondary");
             recentBody.appendChild(row);
         });
     }
@@ -143,6 +152,7 @@ function computeRecentPendingUpcoming (checks) {
 
 document.addEventListener("DOMContentLoaded", function () {
     stats.then(normalizeRawChecks).then(function (checks) {
+        smallestPeriod = checks.reduce((min, status) => Math.min(min, status.period), Infinity);
         const nowUTC = now.toISOString();
         console.log(nowUTC);
         console.log(checks);

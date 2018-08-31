@@ -31,6 +31,10 @@ progress {
     margin-right: 0.5em;
 }
 
+#summary .tab-groups .tabs .secondary {
+    opacity: 1; /* I would normally reduce this to 0.6, but I don't like the resulting aesthetics. */
+}
+
 #summary .tab-groups .tabs > h1 {
     margin-left: 0;
     margin-right: 0;
@@ -62,11 +66,11 @@ progress {
 }
 
 
-#summary .tab-groups .tabs > ul > li > a.up {
-    background-color: rgba(0, 255, 0, 0.5);;
+#summary .tab-groups .tabs > ul > li.up > a {
+    background-color: rgba(0, 255, 0, 0.5);
 }
 
-#summary .tab-groups .tabs > ul > li > a.down {
+#summary .tab-groups .tabs > ul > li.down > a {
     background-color: red;
 }
 
@@ -89,4 +93,13 @@ progress {
     flex-flow: row wrap;
     justify-content: space-around;
     justify-content: space-evenly;
+}
+
+
+main table tr.secondary {
+    color: rgba(0, 0, 0, 0.6);
+}
+
+main table tr.secondary a {
+    opacity: 0.6;
 }
