@@ -84,6 +84,48 @@ progress {
 }
 
 
+main table tr.secondary {
+    color: rgba(0, 0, 0, 0.6);
+}
+
+main table tr.secondary a {
+    opacity: 0.6;
+}
+
+
+main table .current-status {
+    text-align: center;
+    font-weight: bold;
+    width: 4.75rem;
+}
+
+#recent-checks .current-status {
+    width: initial;
+}
+
+main table .uptime {
+    text-align: center;
+}
+
+main table tr.up .current-status {
+    color: forestgreen;
+}
+
+main table tr.down .current-status {
+    background-color: red;
+}
+
+main table tr.secondary.up .current-status {
+    color: rgba(34, 139, 34, 0.6); /* forestgreen */
+}
+
+main table tr.secondary.down .current-status {
+    background-color: rgba(255, 0, 0, 0.6); /* red */
+}
+
+
+
+
 #details caption {
     margin-bottom: 0.25em;
 }
@@ -93,13 +135,4 @@ progress {
     flex-flow: row wrap;
     justify-content: space-around;
     justify-content: space-evenly;
-}
-
-
-main table tr.secondary {
-    color: rgba(0, 0, 0, 0.6);
-}
-
-main table tr.secondary a {
-    opacity: 0.6;
 }

@@ -56,16 +56,19 @@ function formatFriendlyDate (date) {
 function syncSummaryStatus (status) {
     const link = summaryTabs.querySelector(`[href="#${status.alias}"]`);
     const tab = link.parentElement;
-    tab.classList.add(status.down ? "down" : "up");
-    link.textContent = formatUptime(status.uptime) + "%";
     if (status.period > smallestPeriod)
         tab.classList.add("secondary");
+    tab.classList.add(status.down ? "down" : "up");
+    link.textContent = formatUptime(status.uptime) + "%";
 }
 
 function syncMainStatus (status) {
     const row = document.getElementById(status.alias);
     if (!row)
         return;
+    if (status.period > smallestPeriod)
+        row.classList.add("secondary");
+    row.classList.add(status.down ? "down" : "up");
     const currentStatusCell = row.querySelector(".current-status");
     currentStatusCell.textContent = status.down ? "✘ DOWN!" : "✔ Up!";
     const uptimeCell = row.querySelector(".uptime");
@@ -74,8 +77,6 @@ function syncMainStatus (status) {
     lastCheckCell.textContent = status.lastCheck.formatDate();
     const nextCheckCell = row.querySelector(".next-check");
     nextCheckCell.textContent = status.nextCheck.formatDate();
-    if (status.period > smallestPeriod)
-        row.classList.add("secondary");
 }
 
 function syncDetailedStatus (recentChecks, pendingChecks, upcomingChecks) {
@@ -84,17 +85,21 @@ function syncDetailedStatus (recentChecks, pendingChecks, upcomingChecks) {
         const recentBody = template.parentElement;
         checks.forEach(function (check) {
             const row = template.content.cloneNode(true);
+            const rowClassList = row.firstElementChild.classList;
+            if (check.period > smallestPeriod)
+                rowClassList.add("secondary");
+            rowClassList.add(check.down ? "down" : "up");
             const websiteCell = row.querySelector(".website a");
             websiteCell.href = "#" + check.alias;
             websiteCell.textContent = check.alias;
             additionalProcessing(check, row);
-            if (check.period > smallestPeriod)
-                row.firstElementChild.classList.add("secondary");
             recentBody.appendChild(row);
         });
+        if (checks.length === 0)
+            document.getElementById(id).remove();
     }
     process(recentChecks, "recent-checks", function (check, row) {
-        row.querySelector(".status").textContent = check.down ? "✘ DOWN!" : "✔ Up!";
+        row.querySelector(".current-status").textContent = check.down ? "✘ DOWN!" : "✔ Up!";
         row.querySelector(".when").textContent = check.lastCheck.formatDate();
     });
     function formatNextCheck (check, row) {
