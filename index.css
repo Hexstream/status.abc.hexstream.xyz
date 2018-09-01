@@ -17,6 +17,14 @@ progress {
     opacity: 1;
 }
 
+#summary #last-and-next-checks .tag.hv .v {
+    white-space: initial;
+}
+
+#summary #last-and-next-checks .tag.hv .v time {
+    white-space: nowrap;
+}
+
 
 #summary .tab-groups {
     justify-content: center;

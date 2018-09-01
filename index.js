@@ -169,9 +169,13 @@ document.addEventListener("DOMContentLoaded", function () {
         document.querySelector("#total-average-uptime").textContent = formatUptime(totalAverageUptime) + "%";
         const [recentChecks, pendingChecks, upcomingChecks, oldestPendingOrUpcoming] = computeRecentPendingUpcoming(checks);
         const mostRecentCheck = recentChecks[0];
-        document.querySelector("#last-check").textContent = `${mostRecentCheck.alias} was ${mostRecentCheck.down ? "DOWN" : "up"} ${mostRecentCheck.lastCheck.formatDate()}.`;
+        const lastCheckNode = document.querySelector("#last-check");
+        lastCheckNode.textContent = `${mostRecentCheck.alias} was ${mostRecentCheck.down ? "DOWN" : "up"} `;
+        lastCheckNode.insertAdjacentHTML("beforeend", `<time datetime="${mostRecentCheck.lastCheck.when.toISOString()}">${mostRecentCheck.lastCheck.formatDate()}</time>.`);
         const mostUpcomingCheck = oldestPendingOrUpcoming;
-        document.querySelector("#next-check").textContent = `${mostUpcomingCheck.alias} ${mostUpcomingCheck.nextCheck.isPending ? "has a check pending since" : "will be checked"} ${mostUpcomingCheck.nextCheck.formatDate()}.`;
+        const nextCheckNode = document.querySelector("#next-check");
+        nextCheckNode.textContent = `${mostUpcomingCheck.alias} ${mostUpcomingCheck.nextCheck.isPending ? "has a check pending since" : "will be checked"} `;
+        nextCheckNode.insertAdjacentHTML("beforeend", `<time datetime="${mostUpcomingCheck.nextCheck.when.toISOString()}">${mostUpcomingCheck.nextCheck.formatDate()}</time>.`);
         summaryTabs = document.querySelector("#summary .tab-groups");
         checks.forEach(function (status) {
             syncSummaryStatus(status);
