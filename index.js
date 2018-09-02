@@ -1,7 +1,72 @@
 "use strict";
 
-var now;
-var rawSymbol = Symbol("raw");
+function transformObject (object, transformers) {
+    const transformed = {};
+    Object.keys(object).forEach(function (key) {
+        const value = object[key];
+        const transformer = transformers[key];
+        transformed[key] = transformer ? transformer(value) : value;
+    });
+    return transformed;
+}
+
+class CheckGroup {
+
+    static normalizeRawChecks (rawChecks) {
+        function utcToDate (utc) {
+            return utc ? new Date(utc) : null;
+        }
+        const periodsSet = new Set();
+        const transformed = rawChecks.map(function (rawCheck) {
+            const transformed = transformObject(rawCheck, {
+                down_since: utcToDate,
+                last_check_at: utcToDate,
+                next_check_at: utcToDate,
+                mute_until: utcToDate,
+                ssl: ssl => transformObject(ssl, {
+                    tested_at: utcToDate
+                })
+            });
+            transformed.lastCheck = new CheckTime("last", transformed.last_check_at);
+            delete transformed.last_check_at;
+            transformed.nextCheck = new CheckTime("next", transformed.next_check_at);
+            delete transformed.next_check_at;
+            transformed[rawSymbol] = rawCheck;
+            periodsSet.add(transformed.period);
+            return transformed;
+        });
+        const periodsArray = Array.from(periodsSet).sort((a, b) => a - b);
+        transformed.forEach(function (check) {
+            check.tier = periodsArray.indexOf(check.period) + 1;
+        });
+        transformed[rawSymbol] = rawChecks;
+        return transformed;
+    }
+
+    static computeRecentPendingUpcoming (checks) {
+        const recent = checks.slice().sort((a, b) => b.lastCheck.when - a.lastCheck.when);
+        const pendingOrUpcoming = checks.slice().sort((a, b) => a.nextCheck.when - b.nextCheck.when);
+        return [
+            recent,
+            pendingOrUpcoming.filter(check => check.nextCheck.isPending),
+            pendingOrUpcoming.filter(check => !check.nextCheck.isPending),
+            pendingOrUpcoming[0]
+        ];
+    }
+
+    constructor (checks) {
+        this.checks = checks;
+        const [recentChecks, pendingChecks, upcomingChecks, oldestPendingOrUpcoming] = CheckGroup.computeRecentPendingUpcoming(checks);
+        this.recentChecks = recentChecks;
+        this.pendingChecks = pendingChecks;
+        this.upcomingChecks = upcomingChecks;
+        this.oldestPendingOrUpcoming = oldestPendingOrUpcoming;
+        this.up = checks.filter(status => !status.down);
+        this.down = checks.filter(status => status.down);
+        this.totalAverageUptime = checks.reduce((total, status) => total + status.uptime, 0) / checks.length;
+    }
+
+}
 
 class CheckTime {
 
@@ -35,9 +100,15 @@ class CheckTime {
 
 };
 
-const stats = fetch("https://updown.io/api/checks?api-key=ro-m39tkgb1wAtmudZEvB4i").then(function (response) {
+var allChecks;
+var now;
+var rawSymbol = Symbol("raw");
+const allChecksRequest = fetch("https://updown.io/api/checks?api-key=ro-m39tkgb1wAtmudZEvB4i").then(function (response) {
     now = new Date(response.headers.get("date"));
     return response.json();
+}).then(rawChecks => new CheckGroup(CheckGroup.normalizeRawChecks(rawChecks)));
+allChecksRequest.then(function (all) {
+    allChecks = all;
 });
 var summaryTabs;
 
@@ -115,83 +186,29 @@ function syncDetailedStatus (recentChecks, pendingChecks, upcomingChecks) {
     process(upcomingChecks, "upcoming-checks", formatNextCheck);
 }
 
-function transformObject (object, transformers) {
-    const transformed = {};
-    Object.keys(object).forEach(function (key) {
-        const value = object[key];
-        const transformer = transformers[key];
-        transformed[key] = transformer ? transformer(value) : value;
-    });
-    return transformed;
-}
-
-function normalizeRawChecks (rawChecks) {
-    function utcToDate (utc) {
-        return utc ? new Date(utc) : null;
-    }
-    const periodsSet = new Set();
-    const transformed = rawChecks.map(function (rawCheck) {
-        const transformed = transformObject(rawCheck, {
-            down_since: utcToDate,
-            last_check_at: utcToDate,
-            next_check_at: utcToDate,
-            mute_until: utcToDate,
-            ssl: ssl => transformObject(ssl, {
-                tested_at: utcToDate
-            })
-        });
-        transformed.lastCheck = new CheckTime("last", transformed.last_check_at);
-        delete transformed.last_check_at;
-        transformed.nextCheck = new CheckTime("next", transformed.next_check_at);
-        delete transformed.next_check_at;
-        transformed[rawSymbol] = rawCheck;
-        periodsSet.add(transformed.period);
-        return transformed;
-    });
-    const periodsArray = Array.from(periodsSet).sort((a, b) => a - b);
-    transformed.forEach(function (check) {
-        check.tier = periodsArray.indexOf(check.period) + 1;
-    });
-    transformed[rawSymbol] = rawChecks;
-    return transformed;
-}
-
-function computeRecentPendingUpcoming (checks) {
-    const recent = checks.slice().sort((a, b) => b.lastCheck.when - a.lastCheck.when);
-    const pendingOrUpcoming = checks.slice().sort((a, b) => a.nextCheck.when - b.nextCheck.when);
-    return [
-        recent,
-        pendingOrUpcoming.filter(check => check.nextCheck.isPending),
-        pendingOrUpcoming.filter(check => !check.nextCheck.isPending),
-        pendingOrUpcoming[0]
-    ];
-}
-
 document.addEventListener("DOMContentLoaded", function () {
-    stats.then(normalizeRawChecks).then(function (checks) {
+    allChecksRequest.then(function (allChecks) {
         const nowUTC = now.toISOString();
         console.log(nowUTC);
-        console.log(checks);
+        console.log(allChecks);
         const nowElement = document.querySelector("#now time");
         nowElement.setAttribute("datetime", nowUTC);
         nowElement.textContent = now.toLocaleTimeString() + " on " + formatFriendlyDate(now);
-        document.querySelector("#total-up-count").textContent = checks.filter(status => !status.down).length;
-        const totalAverageUptime = checks.reduce((total, status) => total + status.uptime, 0) / checks.length;
-        document.querySelector("#total-average-uptime").textContent = formatUptime(totalAverageUptime) + "%";
-        const [recentChecks, pendingChecks, upcomingChecks, oldestPendingOrUpcoming] = computeRecentPendingUpcoming(checks);
-        const mostRecentCheck = recentChecks[0];
+        document.querySelector("#total-up-count").textContent = allChecks.up.length;
+        document.querySelector("#total-average-uptime").textContent = formatUptime(allChecks.totalAverageUptime) + "%";
+        const mostRecentCheck = allChecks.recentChecks[0];
         const lastCheckNode = document.querySelector("#last-check");
         lastCheckNode.textContent = `${mostRecentCheck.alias} was ${mostRecentCheck.down ? "DOWN" : "up"} `;
         lastCheckNode.insertAdjacentHTML("beforeend", `<time datetime="${mostRecentCheck.lastCheck.when.toISOString()}">${mostRecentCheck.lastCheck.formatDate()}</time>.`);
-        const mostUpcomingCheck = oldestPendingOrUpcoming;
+        const mostUpcomingCheck = allChecks.oldestPendingOrUpcoming;
         const nextCheckNode = document.querySelector("#next-check");
         nextCheckNode.textContent = `${mostUpcomingCheck.alias} ${mostUpcomingCheck.nextCheck.isPending ? "has a check pending since" : "will be checked"} `;
         nextCheckNode.insertAdjacentHTML("beforeend", `<time datetime="${mostUpcomingCheck.nextCheck.when.toISOString()}">${mostUpcomingCheck.nextCheck.formatDate()}</time>.`);
         summaryTabs = document.querySelector("#summary .tab-groups");
-        checks.forEach(function (status) {
+        allChecks.checks.forEach(function (status) {
             syncSummaryStatus(status);
             syncMainStatus(status);
         });
-        syncDetailedStatus(recentChecks, pendingChecks, upcomingChecks);
+        syncDetailedStatus(allChecks.recentChecks, allChecks.pendingChecks, allChecks.upcomingChecks);
     });
 });
