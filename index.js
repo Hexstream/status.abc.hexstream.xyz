@@ -80,6 +80,14 @@ function syncMainStatus (status) {
 }
 
 function syncDetailedStatus (recentChecks, pendingChecks, upcomingChecks) {
+    function splitWebsitePrefixSuffix (name) {
+        const components = name.split(".");
+        const splitIndex = components.length - 2;
+        return [
+            components.slice(0, splitIndex).join("."),
+            "." + components.slice(splitIndex).join(".")
+        ];
+    }
     function process (checks, id, additionalProcessing) {
         const template = document.querySelector(`#${id} > tbody > template`);
         const recentBody = template.parentElement;
@@ -91,7 +99,10 @@ function syncDetailedStatus (recentChecks, pendingChecks, upcomingChecks) {
             rowClassList.add(check.down ? "down" : "up");
             const websiteCell = row.querySelector(".website a");
             websiteCell.href = "#" + check.alias;
-            websiteCell.textContent = check.alias;
+            const [websitePrefix, websiteSuffix] = splitWebsitePrefixSuffix(check.alias);
+            websiteCell.textContent = websitePrefix;
+            websiteCell.insertAdjacentHTML("beforeend", "<wbr>");
+            websiteCell.insertAdjacentText("beforeend", websiteSuffix);
             additionalProcessing(check, row);
             recentBody.appendChild(row);
         });
