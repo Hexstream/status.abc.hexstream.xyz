@@ -1,7 +1,6 @@
 "use strict";
 
 var now;
-var smallestPeriod;
 var rawSymbol = Symbol("raw");
 
 class CheckTime {
@@ -56,8 +55,7 @@ function formatFriendlyDate (date) {
 function syncSummaryStatus (status) {
     const link = summaryTabs.querySelector(`[href="#${status.alias}"]`);
     const tab = link.parentElement;
-    if (status.period > smallestPeriod)
-        tab.classList.add("secondary");
+    tab.dataset.tier = status.tier;
     tab.classList.add(status.down ? "down" : "up");
     link.textContent = formatUptime(status.uptime) + "%";
 }
@@ -66,8 +64,7 @@ function syncMainStatus (status) {
     const row = document.getElementById(status.alias);
     if (!row)
         return;
-    if (status.period > smallestPeriod)
-        row.classList.add("secondary");
+    row.dataset.tier = status.tier;
     row.classList.add(status.down ? "down" : "up");
     const currentStatusCell = row.querySelector(".current-status");
     currentStatusCell.textContent = status.down ? "✘ DOWN!" : "✔ Up!";
@@ -92,11 +89,9 @@ function syncDetailedStatus (recentChecks, pendingChecks, upcomingChecks) {
         const template = document.querySelector(`#${id} > tbody > template`);
         const recentBody = template.parentElement;
         checks.forEach(function (check) {
-            const row = template.content.cloneNode(true);
-            const rowClassList = row.firstElementChild.classList;
-            if (check.period > smallestPeriod)
-                rowClassList.add("secondary");
-            rowClassList.add(check.down ? "down" : "up");
+            const row = template.content.cloneNode(true).firstElementChild;
+            row.dataset.tier = check.tier;
+            row.classList.add(check.down ? "down" : "up");
             const websiteCell = row.querySelector(".website a");
             websiteCell.href = "#" + check.alias;
             const [websitePrefix, websiteSuffix] = splitWebsitePrefixSuffix(check.alias);
@@ -134,6 +129,7 @@ function normalizeRawChecks (rawChecks) {
     function utcToDate (utc) {
         return utc ? new Date(utc) : null;
     }
+    const periodsSet = new Set();
     const transformed = rawChecks.map(function (rawCheck) {
         const transformed = transformObject(rawCheck, {
             down_since: utcToDate,
@@ -149,7 +145,12 @@ function normalizeRawChecks (rawChecks) {
         transformed.nextCheck = new CheckTime("next", transformed.next_check_at);
         delete transformed.next_check_at;
         transformed[rawSymbol] = rawCheck;
+        periodsSet.add(transformed.period);
         return transformed;
+    });
+    const periodsArray = Array.from(periodsSet).sort((a, b) => a - b);
+    transformed.forEach(function (check) {
+        check.tier = periodsArray.indexOf(check.period) + 1;
     });
     transformed[rawSymbol] = rawChecks;
     return transformed;
@@ -168,7 +169,6 @@ function computeRecentPendingUpcoming (checks) {
 
 document.addEventListener("DOMContentLoaded", function () {
     stats.then(normalizeRawChecks).then(function (checks) {
-        smallestPeriod = checks.reduce((min, status) => Math.min(min, status.period), Infinity);
         const nowUTC = now.toISOString();
         console.log(nowUTC);
         console.log(checks);

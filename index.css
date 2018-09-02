@@ -39,7 +39,7 @@ progress {
     margin-right: 0.5em;
 }
 
-#summary .tab-groups .tabs .secondary {
+#summary .tab-groups .tabs [data-tier="2"] {
     opacity: 1; /* I would normally reduce this to 0.6, but I don't like the resulting aesthetics. */
 }
 
@@ -92,11 +92,11 @@ progress {
 }
 
 
-main table tr.secondary {
+main table tr[data-tier="2"] {
     color: rgba(0, 0, 0, 0.6);
 }
 
-main table tr.secondary a {
+main table tr[data-tier="2"] a {
     opacity: 0.6;
 }
 
@@ -123,11 +123,11 @@ main table tr.down .current-status {
     background-color: red;
 }
 
-main table tr.secondary.up .current-status {
+main table tr[data-tier="2"].up .current-status {
     color: rgba(34, 139, 34, 0.6); /* forestgreen */
 }
 
-main table tr.secondary.down .current-status {
+main table tr[data-tier="2"].down .current-status {
     background-color: rgba(255, 0, 0, 0.6); /* red */
 }
 
