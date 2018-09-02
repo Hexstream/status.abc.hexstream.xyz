@@ -8,20 +8,20 @@ progress {
 }
 
 
-#summary #uptime.tags {
+.uptime-summary .tags .tag {
+    opacity: 1;
+}
+
+.uptime-summary .uptime.tags {
     font-size: x-large;
     margin-bottom: 0.5em;
 }
 
-#summary .tags .tag {
-    opacity: 1;
-}
-
-#summary #last-and-next-checks .tag.hv .v {
+#summary .uptime-summary .last-and-next-checks .tag.hv .v {
     white-space: initial;
 }
 
-#summary #last-and-next-checks .tag.hv .v time {
+#summary .uptime-summary .last-and-next-checks .tag.hv .v time {
     white-space: nowrap;
 }
 

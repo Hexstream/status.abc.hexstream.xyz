@@ -186,6 +186,19 @@ function syncDetailedStatus (recentChecks, pendingChecks, upcomingChecks) {
     process(upcomingChecks, "upcoming-checks", formatNextCheck);
 }
 
+function updateUptimeSummaryNode (node, checkGroup) {
+    node.querySelector(".websites-currently-up .v").textContent = checkGroup.up.length + "/" + checkGroup.checks.length;
+    node.querySelector(".average-uptime-this-month .v").textContent = formatUptime(checkGroup.totalAverageUptime) + "%";
+    const mostRecentCheck = checkGroup.recentChecks[0];
+    const lastCheckNode = node.querySelector(".last-and-next-checks .last-check .v");
+    lastCheckNode.textContent = `${mostRecentCheck.alias} was ${mostRecentCheck.down ? "DOWN" : "up"} `;
+    lastCheckNode.insertAdjacentHTML("beforeend", `<time datetime="${mostRecentCheck.lastCheck.when.toISOString()}">${mostRecentCheck.lastCheck.formatDate()}</time>.`);
+    const mostUpcomingCheck = checkGroup.oldestPendingOrUpcoming;
+    const nextCheckNode = node.querySelector(".last-and-next-checks .next-check .v");
+    nextCheckNode.textContent = `${mostUpcomingCheck.alias} ${mostUpcomingCheck.nextCheck.isPending ? "has a check pending since" : "will be checked"} `;
+    nextCheckNode.insertAdjacentHTML("beforeend", `<time datetime="${mostUpcomingCheck.nextCheck.when.toISOString()}">${mostUpcomingCheck.nextCheck.formatDate()}</time>.`);
+}
+
 document.addEventListener("DOMContentLoaded", function () {
     allChecksRequest.then(function (allChecks) {
         const nowUTC = now.toISOString();
@@ -194,16 +207,11 @@ document.addEventListener("DOMContentLoaded", function () {
         const nowElement = document.querySelector("#now time");
         nowElement.setAttribute("datetime", nowUTC);
         nowElement.textContent = now.toLocaleTimeString() + " on " + formatFriendlyDate(now);
-        document.querySelector("#total-up-count").textContent = allChecks.up.length;
-        document.querySelector("#total-average-uptime").textContent = formatUptime(allChecks.totalAverageUptime) + "%";
-        const mostRecentCheck = allChecks.recentChecks[0];
-        const lastCheckNode = document.querySelector("#last-check");
-        lastCheckNode.textContent = `${mostRecentCheck.alias} was ${mostRecentCheck.down ? "DOWN" : "up"} `;
-        lastCheckNode.insertAdjacentHTML("beforeend", `<time datetime="${mostRecentCheck.lastCheck.when.toISOString()}">${mostRecentCheck.lastCheck.formatDate()}</time>.`);
-        const mostUpcomingCheck = allChecks.oldestPendingOrUpcoming;
-        const nextCheckNode = document.querySelector("#next-check");
-        nextCheckNode.textContent = `${mostUpcomingCheck.alias} ${mostUpcomingCheck.nextCheck.isPending ? "has a check pending since" : "will be checked"} `;
-        nextCheckNode.insertAdjacentHTML("beforeend", `<time datetime="${mostUpcomingCheck.nextCheck.when.toISOString()}">${mostUpcomingCheck.nextCheck.formatDate()}</time>.`);
+        for (var checkGroupName of ["all", "hexstreamsoft.com", "hexstream.net", "hexstream.xyz"]) {
+            updateUptimeSummaryNode(document.querySelector(`.uptime-summary[data-check-group="${checkGroupName}"]`),
+                                    checkGroupName === "all" ? allChecks : new CheckGroup(allChecks.checks.filter(check => check.alias.endsWith(checkGroupName))));
+        }
+
         summaryTabs = document.querySelector("#summary .tab-groups");
         allChecks.checks.forEach(function (status) {
             syncSummaryStatus(status);
