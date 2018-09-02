@@ -132,7 +132,16 @@ main table tr.secondary.down .current-status {
 }
 
 
+main table thead .uptime {
+    font-size: smaller;
+    padding-top: 0;
+    padding-bottom: 0;
+    line-height: 1em;
+}
 
+main table > thead > tr:last-child > th {
+    vertical-align: middle;
+}
 
 #details caption {
     margin-bottom: 0.25em;
