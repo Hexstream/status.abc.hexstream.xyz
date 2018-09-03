@@ -12,8 +12,9 @@ progress {
     opacity: 1;
 }
 
-.uptime-summary .uptime.tags {
-    margin-bottom: 0.5em;
+.uptime-summary .tags.uptime {
+    font-size: 1.2em;
+    margin-bottom: 0.5rem;
 }
 
 .uptime-summary .last-and-next-checks .tag.hv .v {
@@ -25,8 +26,9 @@ progress {
 }
 
 
-#summary .uptime-summary .uptime.tags {
-    font-size: x-large;
+#summary .uptime-summary .tags.uptime {
+    font-size: 1.5em;
+    margin-bottom: 0.5em;
 }
 
 
