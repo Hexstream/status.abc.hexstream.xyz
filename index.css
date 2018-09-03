@@ -17,11 +17,11 @@ progress {
     margin-bottom: 0.5em;
 }
 
-#summary .uptime-summary .last-and-next-checks .tag.hv .v {
+.uptime-summary .last-and-next-checks .tag.hv .v {
     white-space: initial;
 }
 
-#summary .uptime-summary .last-and-next-checks .tag.hv .v time {
+.uptime-summary .last-and-next-checks .tag.hv .v time {
     white-space: nowrap;
 }
 
