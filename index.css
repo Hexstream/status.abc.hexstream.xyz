@@ -13,7 +13,6 @@ progress {
 }
 
 .uptime-summary .uptime.tags {
-    font-size: x-large;
     margin-bottom: 0.5em;
 }
 
@@ -23,6 +22,11 @@ progress {
 
 .uptime-summary .last-and-next-checks .tag.hv .v time {
     white-space: nowrap;
+}
+
+
+#summary .uptime-summary .uptime.tags {
+    font-size: x-large;
 }
 
 
