@@ -16,6 +16,14 @@ class CheckGroup {
         function utcToDate (utc) {
             return utc ? new Date(utc) : null;
         }
+        function formatPeriod (seconds) {
+            if (seconds % 60 !== 0)
+                return seconds + "s";
+            if (seconds % 3600 !== 0)
+                return seconds / 60 + "m";
+            else
+                return seconds / 3600 + "h";
+        }
         const periodsSet = new Set();
         const transformed = rawChecks.map(function (rawCheck) {
             const transformed = transformObject(rawCheck, {
@@ -33,6 +41,7 @@ class CheckGroup {
             delete transformed.next_check_at;
             transformed[rawSymbol] = rawCheck;
             periodsSet.add(transformed.period);
+            transformed.formattedPeriod = formatPeriod(transformed.period);
             return transformed;
         });
         const periodsArray = Array.from(periodsSet).sort((a, b) => a - b);
@@ -145,6 +154,8 @@ function syncMainStatus (status) {
     lastCheckCell.textContent = status.lastCheck.formatDate();
     const nextCheckCell = row.querySelector(".next-check");
     nextCheckCell.textContent = status.nextCheck.formatDate();
+    const intervalCell = row.querySelector(".interval");
+    intervalCell.textContent = status.formattedPeriod;
 }
 
 function syncDetailedStatus (recentChecks, pendingChecks, upcomingChecks) {

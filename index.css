@@ -145,6 +145,10 @@ main table thead .uptime {
     line-height: 1em;
 }
 
+main table .interval {
+    text-align: center;
+}
+
 main table > thead > tr:last-child > th {
     vertical-align: middle;
 }
