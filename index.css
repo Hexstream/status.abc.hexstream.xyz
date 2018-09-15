@@ -1,17 +1,7 @@
-#page-header + .tabs {
-    margin-top: 1.5em;
-    margin-bottom: 1.5em;
-}
-
-
 progress {
     width: 1.5em;
 }
 
-
-#summary {
-    margin-top: 0;
-}
 
 #summary .breadcrumbs-bar {
     justify-content: center;
