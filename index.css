@@ -3,17 +3,6 @@ progress {
 }
 
 
-#summary .breadcrumbs-bar {
-    justify-content: center;
-    max-width: -webkit-max-content;
-    max-width: -moz-max-content;
-    max-width: max-content;
-    padding-right: 0.6em;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-
 .uptime-summary .tags .tag {
     opacity: 1;
 }
