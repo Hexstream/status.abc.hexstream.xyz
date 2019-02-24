@@ -158,3 +158,8 @@ main table > thead > tr:last-child > th {
     justify-content: space-around;
     justify-content: space-evenly;
 }
+
+
+#about-updown\.io p {
+    text-align: center;
+}
