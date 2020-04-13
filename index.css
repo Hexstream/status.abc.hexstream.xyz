@@ -86,9 +86,10 @@ progress {
 
 /* Magically align hexstream.xyz with hexstreamsoft.com. */
 @media (min-width: 74.75em) {
-    #summary #summary_hexstream\.xyz {
+    #summary #summary_hexstream\.xyz,
+    #summary #summary_hexstream\.dev {
         position: relative;
-        left: -0.3em;
+        left: 0.85em;
     }
 }
 
