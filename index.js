@@ -218,7 +218,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const nowElement = document.querySelector("#now time");
         nowElement.setAttribute("datetime", nowUTC);
         nowElement.textContent = now.toLocaleTimeString() + " on " + formatFriendlyDate(now);
-        for (var checkGroupName of ["all", "hexstreamsoft.com", "hexstream.expert", "hexstream.net", "hexstream.xyz", "hexstream.dev", "stream-lisp.org"]) {
+        for (var checkGroupName of ["all", "hexstreamsoft.com", "hexstream.expert", "hexstream.net", "hexstream.xyz", "hexstream.dev"]) {
             updateUptimeSummaryNode(document.querySelector(`.uptime-summary[data-check-group="${checkGroupName}"]`),
                                     checkGroupName === "all" ? allChecks : new CheckGroup(allChecks.checks.filter(check => check.alias.endsWith(checkGroupName))));
         }
