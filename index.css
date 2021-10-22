@@ -142,7 +142,8 @@ main table tr[data-tier="2"].down .current-status {
 }
 
 
-main table thead .uptime {
+/* .navtable instead of table to ensure padding does not get overridden. */
+main .navtable thead .uptime {
     font-size: smaller;
     padding-top: 0;
     padding-bottom: 0;
