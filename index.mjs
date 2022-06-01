@@ -1,5 +1,3 @@
-"use strict";
-
 function transformObject (object, transformers) {
     const transformed = {};
     Object.keys(object).forEach(function (key) {
@@ -210,24 +208,22 @@ function updateUptimeSummaryNode (node, checkGroup) {
     nextCheckNode.insertAdjacentHTML("beforeend", `<time datetime="${mostUpcomingCheck.nextCheck.when.toISOString()}">${mostUpcomingCheck.nextCheck.formatDate()}</time>.`);
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-    allChecksRequest.then(function (allChecks) {
-        const nowUTC = now.toISOString();
-        console.log(nowUTC);
-        console.log(allChecks);
-        const nowElement = document.querySelector("#now time");
-        nowElement.setAttribute("datetime", nowUTC);
-        nowElement.textContent = now.toLocaleTimeString() + " on " + formatFriendlyDate(now);
-        for (var checkGroupName of ["all", "hexstreamsoft.com", "hexstream.expert", "hexstream.net", "hexstream.xyz", "hexstream.dev"]) {
-            updateUptimeSummaryNode(document.querySelector(`.uptime-summary[data-check-group="${checkGroupName}"]`),
-                                    checkGroupName === "all" ? allChecks : new CheckGroup(allChecks.checks.filter(check => check.alias.endsWith(checkGroupName))));
-        }
+allChecksRequest.then(function (allChecks) {
+    const nowUTC = now.toISOString();
+    console.log(nowUTC);
+    console.log(allChecks);
+    const nowElement = document.querySelector("#now time");
+    nowElement.setAttribute("datetime", nowUTC);
+    nowElement.textContent = now.toLocaleTimeString() + " on " + formatFriendlyDate(now);
+    for (var checkGroupName of ["all", "hexstreamsoft.com", "hexstream.expert", "hexstream.net", "hexstream.xyz", "hexstream.dev"]) {
+        updateUptimeSummaryNode(document.querySelector(`.uptime-summary[data-check-group="${checkGroupName}"]`),
+                                checkGroupName === "all" ? allChecks : new CheckGroup(allChecks.checks.filter(check => check.alias.endsWith(checkGroupName))));
+    }
 
-        summaryTabs = document.querySelector("#summary .tab-groups");
-        allChecks.checks.forEach(function (status) {
-            syncSummaryStatus(status);
-            syncMainStatus(status);
-        });
-        syncDetailedStatus(allChecks.recentChecks, allChecks.pendingChecks, allChecks.upcomingChecks);
+    summaryTabs = document.querySelector("#summary .tab-groups");
+    allChecks.checks.forEach(function (status) {
+        syncSummaryStatus(status);
+        syncMainStatus(status);
     });
+    syncDetailedStatus(allChecks.recentChecks, allChecks.pendingChecks, allChecks.upcomingChecks);
 });
