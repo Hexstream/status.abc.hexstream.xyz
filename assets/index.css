@@ -172,18 +172,18 @@ main table .interval {
 }
 
 
-#meta-nav .updown:before {
+#meta-nav .updown::before {
     background-image: url("https://global.hexstream.dev/non-free/images/logos/updown.io.png");
 }
 
 @media (max-width: 34em) {
-    #meta-nav .updown:after {
+    #meta-nav .updown::after {
         content: "updown.io";
     }
 }
 
 @media (max-width: 20em) {
-    #meta-nav .updown:after {
+    #meta-nav .updown::after {
         content: "​"; /* Zero width space */
     }
 }
