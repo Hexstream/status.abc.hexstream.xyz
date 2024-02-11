@@ -4,7 +4,7 @@ progress {
 
 
 .uptime-summary .tags .tag {
-    opacity: 1;
+    opacity: revert;
 }
 
 .uptime-summary .tags.uptime {
@@ -13,7 +13,7 @@ progress {
 }
 
 .uptime-summary .last-and-next-checks .tag.hv .v {
-    white-space: initial;
+    white-space: revert;
 }
 
 .uptime-summary .last-and-next-checks .tag.hv .v time {
@@ -39,7 +39,7 @@ progress {
 }
 
 #summary .tab-groups .tabs [data-tier="2"] {
-    opacity: 1; /* I would normally reduce this to 0.6, but I don't like the resulting aesthetics. */
+    opacity: revert; /* I would normally reduce this to 0.6, but I don't like the resulting aesthetics. */
 }
 
 #summary .tab-groups .tabs > h1 {
@@ -118,7 +118,7 @@ main table .current-status {
 }
 
 #recent-checks .current-status {
-    width: initial;
+    width: revert;
 }
 
 main table .uptime {
