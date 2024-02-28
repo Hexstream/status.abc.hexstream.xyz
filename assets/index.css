@@ -13,7 +13,7 @@ progress {
 }
 
 .uptime-summary .last-and-next-checks .tag.hv .v {
-    white-space: revert;
+    white-space: initial;
 }
 
 .uptime-summary .last-and-next-checks .tag.hv .v time {
