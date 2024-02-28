@@ -49,7 +49,7 @@ progress {
 
 #summary .tab-groups .tabs > ul {
     justify-content: center;
-    background: transparent;
+    background-color: transparent;
     border: none;
     margin-left: 0;
     margin-right: 0;
