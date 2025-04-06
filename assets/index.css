@@ -82,26 +82,6 @@ progress {
 }
 
 
-/* Magically align hexstream.xyz with hexstreamsoft.com. */
-@media (min-width: 82.5em) {
-    #summary #summary_hexstream\.net {
-        position: relative;
-        left: -0.8em;
-    }
-
-    #summary #summary_hexstream\.xyz,
-    #summary #summary_hexstream\.dev {
-        position: relative;
-        left: 0.3em;
-    }
-
-    #summary #summary_stream-lisp\.org {
-        position: relative;
-        left: -1.4em;
-    }
-}
-
-
 main table tr[data-tier="2"] {
     color: rgba(0, 0, 0, 0.6);
 }
