@@ -208,6 +208,15 @@ function updateUptimeSummaryNode (node, checkGroup) {
     nextCheckNode.insertAdjacentHTML("beforeend", `<time datetime="${mostUpcomingCheck.nextCheck.when.toISOString()}">${mostUpcomingCheck.nextCheck.formatDate()}</time>.`);
 }
 
+const miscGroupNames = ["global.hexstream.dev", "hexstream.link"];
+
+function constructCheckGroup (name, all) {
+    if (name === "all")
+        return all;
+    const filter = name === "misc" ? check => miscGroupNames.includes(check.alias) : check => check.alias.endsWith(name);
+    return new CheckGroup(all.checks.filter(filter));
+}
+
 allChecksRequest.then(function (allChecks) {
     const nowUTC = now.toISOString();
     console.log(nowUTC);
@@ -215,9 +224,9 @@ allChecksRequest.then(function (allChecks) {
     const nowElement = document.querySelector("#now time");
     nowElement.setAttribute("datetime", nowUTC);
     nowElement.textContent = now.toLocaleTimeString() + " on " + formatFriendlyDate(now);
-    for (var checkGroupName of ["all", "hexstreamsoft.com", "hexstream.expert", "hexstream.net", "hexstream.xyz", "hexstream.dev"]) {
+    for (var checkGroupName of ["all", "hexstreamsoft.com", "hexstream.expert", "hexstream.net", "hexstream.xyz", "misc"]) {
         updateUptimeSummaryNode(document.querySelector(`.uptime-summary[data-check-group="${checkGroupName}"]`),
-                                checkGroupName === "all" ? allChecks : new CheckGroup(allChecks.checks.filter(check => check.alias.endsWith(checkGroupName))));
+                                constructCheckGroup(checkGroupName, allChecks));
     }
 
     summaryTabs = document.querySelector("#summary .tab-groups");
