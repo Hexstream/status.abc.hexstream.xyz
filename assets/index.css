@@ -86,7 +86,7 @@ main table tr[data-tier="2"] {
     color: rgba(0, 0, 0, 0.6);
 }
 
-main table tr[data-tier="2"] a {
+main table tr[data-tier="2"] > :where(:not(th.direct-link)) a {
     opacity: 0.6;
 }
 
